@@ -1,0 +1,23 @@
+<resources>
+
+    <color name="black_overlay">#66000000</color>
+
+    <color name="dice1">#fffde462</color>
+    <color name="dice2">#ffea708c</color>
+    <color name="dice3">#ff61b660</color>
+    <color name="dice4">#fff6221a</color>
+    <color name="dice5">#ff83428f</color>
+    <color name="dice6">#ff2f65ba</color>
+    <color name="text1">#ff000000</color>
+    <color name="text2">#ff000000</color>
+    <color name="text3">#ff000000</color>
+    <color name="text4">#ffffffff</color>
+    <color name="text5">#ffffffff</color>
+    <color name="text6">#ffffffff</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+
+
+</resources>

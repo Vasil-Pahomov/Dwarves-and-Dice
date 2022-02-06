@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Dwarves and Dice</string>
+    <string name="progress_text_format">%d of %d</string>
+</resources>
