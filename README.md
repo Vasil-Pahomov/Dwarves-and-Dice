@@ -5,3 +5,5 @@ When you throw dices, you have to check first if this color combination has alre
 This assistant app replaces dice throws but it does not repeat color combinations.
 
 Download the apk [here](https://github.com/Vasil-Pahomov/Dwarves-and-Dice/raw/main/apk/dd.apk).
+
+Tap the screen for next combo. Use top left button (cross) to restart game, and top right button (revert) to go to previous step.

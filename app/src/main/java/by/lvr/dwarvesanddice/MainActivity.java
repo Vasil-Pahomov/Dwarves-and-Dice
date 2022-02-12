@@ -6,12 +6,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.media.AudioManager;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.SoundEffectConstants;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -20,10 +23,12 @@ public class MainActivity extends AppCompatActivity {
     DiceView[] diceViews;
     ProgressBar progressBar;
     TextView progressText;
+    ImageButton btnUndo;
     Game game = new Game();
 
     SoundPool soundPool;
-    int soundIdNext, soundIdFinish, soundIdReset;
+    int soundIdNext, soundIdFinish, soundIdReset, soundIdUndo, soundIdFail;
+    long lastTapMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,14 +49,25 @@ public class MainActivity extends AppCompatActivity {
 		game.init(3, 6);
         progressBar.setMax(game.getCombinationsCount());
 
+        btnUndo = (ImageButton)findViewById(R.id.btnUndo);
+
         soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
 
         soundIdNext = soundPool.load(this, R.raw.next,1);
         soundIdFinish = soundPool.load(this, R.raw.finish,1);
         soundIdReset = soundPool.load(this, R.raw.reset,1);
+        soundIdUndo = soundPool.load(this,R.raw.undo, 1);
+        soundIdFail = soundPool.load(this,R.raw.fail, 1);
     }
 
     public void ViewClick(View view) {
+        if (lastTapMillis + 1000 > System.currentTimeMillis()) {
+            lastTapMillis = System.currentTimeMillis();
+            soundPool.play(soundIdFail,1,1,0,0,1);
+            return;
+        }
+        lastTapMillis = System.currentTimeMillis();
+
         if (game.getPlayedCombinationsCount() == game.getCombinationsCount()) {
             Reset();
             return;
@@ -106,5 +122,15 @@ public class MainActivity extends AppCompatActivity {
 
     public void ResetClick(View view) {
         Reset();
+    }
+
+    public void UndoClick(View view) {
+        if (game.getPlayedCombinationsCount() > 1) {
+            soundPool.play(soundIdUndo,1,1,0,0,1);
+            game.previousCombination();
+            UpdateControls();
+        } else {
+            soundPool.play(soundIdFail,1,1,0,0,1);
+        }
     }
 }

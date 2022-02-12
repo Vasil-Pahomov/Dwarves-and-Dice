@@ -16,7 +16,7 @@ public class Game
     private int colors;
     private int combinationsCount;
     private int dices;
-    private byte[] lastCombination;
+    private int currentComboIndex;
     private Random rnd = new Random();
 
     private int calculateCombinationsCount(int dices, int colors)
@@ -54,13 +54,16 @@ public class Game
             throws IllegalStateException
     {
         checkInitialized();
-        return this.lastCombination;
+        if (currentComboIndex < 0 || currentComboIndex >= this.combinationsCount) {
+            return null;
+        }
+        return this.allCombos.get(currentComboIndex);
     }
 
     public int getPlayedCombinationsCount()
     {
         checkInitialized();
-        return this.combinationsCount - this.allCombos.size();
+        return this.currentComboIndex+1;
     }
 
     public void init(int dices, int colors)
@@ -75,21 +78,20 @@ public class Game
             throws IllegalStateException
     {
         checkInitialized();
-        int i = getPlayedCombinationsCount();
-        if (i >= this.combinationsCount) {
+        if (getPlayedCombinationsCount() >= this.combinationsCount) {
             throw new IllegalStateException("All combinations are already played");
         }
-        int j = (int)(this.rnd.nextDouble() * (this.combinationsCount - getPlayedCombinationsCount()));
-        this.lastCombination = this.allCombos.get(j);
-        this.allCombos.remove(this.lastCombination);
-        Log.d("ddd", String.format("Combo %s: %s", i, Arrays.toString(this.lastCombination)));
+        this.currentComboIndex++;
     }
 
     public void previousCombination()
         throws IllegalStateException
     {
         checkInitialized();
-
+        if (getPlayedCombinationsCount() < 0) {
+            throw new IllegalStateException("No previous combination available");
+        }
+        this.currentComboIndex--;
     }
     public void reset()
     {
@@ -101,9 +103,8 @@ public class Game
             combo[i] = 0;
         }
         genCombos(combo,0,1);
-        this.lastCombination = null;
+        this.currentComboIndex = -1;
 
-        /*
         for (int j = 0; j < this.combinationsCount; j++)
         {
             byte[] tmpCombo;
@@ -114,7 +115,7 @@ public class Game
             this.allCombos.set(j,tmpCombo);
 
             Log.d("ddd", String.format("%s = %s", j, Arrays.toString(this.allCombos.get(j))));
-        }*/
+        }
     }
 
     private void genCombos(byte[] currentCombo, int pos, int maxUsed) {
@@ -128,21 +129,20 @@ public class Game
         }
     }
 
-    public boolean restoreState(Bundle bundle)
+    public void restoreState(Bundle bundle)
     {
         if (bundle == null || !bundle.containsKey("ddd-dices")) {
-            return false;
+            return;
         }
 
         this.dices = bundle.getInt("ddd-dices");
         this.colors = bundle.getInt("ddd-colors");
-        int combosRemainingCount = bundle.getInt("ddd-combosremaining");
+        int combosRemainingCount = bundle.getInt("ddd-combos");
         this.allCombos.clear();
         for (int i=0;i<combosRemainingCount;i++) {
             this.allCombos.add(bundle.getByteArray(String.format("ddd-combo%d", i)));
         }
-        this.lastCombination = bundle.getByteArray("ddd-currentcombo");
-        return true;
+        this.currentComboIndex = bundle.getInt("ddd-currentcomboindex");
     }
 
     public void saveState(Bundle paramBundle)
@@ -152,11 +152,11 @@ public class Game
         }
         paramBundle.putInt("ddd-dices", this.dices);
         paramBundle.putInt("ddd-colors", this.colors);
-        paramBundle.putInt("ddd-combosremaining", this.allCombos.size());
+        paramBundle.putInt("ddd-combos", this.allCombos.size());
         for (int i = 0; i < this.allCombos.size(); i++)
         {
             paramBundle.putByteArray(String.format("ddd-combo%d", i), this.allCombos.get(i));
         }
-        paramBundle.putByteArray("ddd-currentcombo", this.lastCombination);
+        paramBundle.putInt("ddd-currentcomboindex", this.currentComboIndex);
     }
 }
